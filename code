@@ -1,0 +1,67 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MyToken {
+    string public name;
+    string public symbol;
+    uint256 public totalSupply;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+
+    address public owner;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    constructor(string memory _name, string memory _symbol, uint256 _initialSupply) {
+        name = _name;
+        symbol = _symbol;
+        totalSupply = _initialSupply;
+        balanceOf[msg.sender] = _initialSupply;
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the contract owner can call this function");
+        _;
+    }
+
+    function mint(address _to, uint256 _amount) public onlyOwner {
+        require(_amount > 0, "Amount must be greater than zero");
+        balanceOf[_to] += _amount;
+        totalSupply += _amount;
+        emit Transfer(address(0), _to, _amount);
+    }
+
+    function burn(uint256 _amount) public {
+        require(_amount > 0, "Amount must be greater than zero");
+        require(balanceOf[msg.sender] >= _amount, "Insufficient balance");
+        balanceOf[msg.sender] -= _amount;
+        totalSupply -= _amount;
+        emit Transfer(msg.sender, address(0), _amount);
+    }
+
+    function transfer(address _to, uint256 _amount) public {
+        require(_amount > 0, "Amount must be greater than zero");
+        require(balanceOf[msg.sender] >= _amount, "Insufficient balance");
+        balanceOf[msg.sender] -= _amount;
+        balanceOf[_to] += _amount;
+        emit Transfer(msg.sender, _to, _amount);
+    }
+
+    function approve(address _spender, uint256 _amount) public {
+        require(_amount > 0, "Amount must be greater than zero");
+        allowance[msg.sender][_spender] = _amount;
+        emit Approval(msg.sender, _spender, _amount);
+    }
+
+    function transferFrom(address _from, address _to, uint256 _amount) public {
+        require(_amount > 0, "Amount must be greater than zero");
+        require(balanceOf[_from] >= _amount, "Insufficient balance");
+        require(allowance[_from][msg.sender] >= _amount, "Insufficient allowance");
+        balanceOf[_from] -= _amount;
+        balanceOf[_to] += _amount;
+        allowance[_from][msg.sender] -= _amount;
+        emit Transfer(_from, _to, _amount);
+    }
+}
