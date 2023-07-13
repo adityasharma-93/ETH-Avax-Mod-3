@@ -47,5 +47,4 @@ If you encounter any issues or have any questions, feel free to open an issue on
 
 ## Acknowledgments
 
-This project is based on the OpenZeppelin library (https://openzeppelin.com/), which provides secure and community-audited smart contract code.
 You can contact adi62333@gmail.com for more info.
